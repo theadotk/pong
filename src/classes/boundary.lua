@@ -1,6 +1,6 @@
 local Boundary = {
     width = SCREEN_WIDTH,
-    height = 10
+    height = 5
 }
 
 function Boundary.new(world, x, y)
@@ -8,7 +8,8 @@ function Boundary.new(world, x, y)
     instance.x = x
     instance.y = y
     instance.body = love.physics.newBody(world, x, y, "static")
-    instance.shape = love.physics.newRectangleShape(Boundary.width / 2, Boundary.height / 2, SCREEN_WIDTH, 10)
+    instance.body:setFixedRotation(true)
+    instance.shape = love.physics.newRectangleShape(Boundary.width, Boundary.height)
     instance.fixture = love.physics.newFixture(instance.body, instance.shape)
     instance.fixture:setFriction(0)
     instance.fixture:setRestitution(1)
@@ -17,7 +18,7 @@ function Boundary.new(world, x, y)
 end
 
 function Boundary:draw()
-    love.graphics.line(self.x, self.y, self.width, self.y)
+    love.graphics.line(0, self.y, SCREEN_WIDTH, self.y)
 end
 
 return Boundary
