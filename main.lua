@@ -1,4 +1,4 @@
-local paddle = require("src.objects.paddle")
+local paddle = require("src.classes.paddle")
 
 local player1, player2
 
@@ -15,6 +15,14 @@ end
 function love.keypressed(key)
     if (key == "escape") then
         love.event.quit()
+    end
+end
+
+function love.keyreleased(key)
+    if (key == "w") or (key == "s") then
+        player1.speed = 0
+    elseif (key == "up") or (key == "down") then
+        player2.speed = 0
     end
 end
 
