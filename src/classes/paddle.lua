@@ -1,35 +1,52 @@
-local paddle = {
+local Paddle = {
     width = 20,
     height = 100,
     acceleration = 1000,
     speed = 0,
-    maxSpeed = 350 -- properties
+    maxSpeed = 300
 }
 
-function paddle.new(x, y)
+function Paddle.new(world, x, y)
     local instance = {}
     instance.x = x
     instance.y = y
-    setmetatable(instance, { __index = paddle })
+    instance.body = love.physics.newBody(world, x, y, "kinematic")
+    instance.shape = love.physics.newRectangleShape(Paddle.width / 2, Paddle.height / 2, Paddle.width, Paddle.height)
+    instance.fixture = love.physics.newFixture(instance.body, instance.shape)
+    setmetatable(instance, { __index = Paddle })
     return instance
 end
 
-function paddle:updateSpeed(dt)
+function Paddle:updateSpeed(dt)
     self.speed = math.min(self.maxSpeed, self.speed + self.acceleration * dt)
 end
 
-function paddle:update(moveUp, moveDown, dt)
+function Paddle:update(moveUp, moveDown, dt)
+    self.y = self.body:getY()
+
+    local minY = self.height / 6
+    local maxY = love.graphics.getHeight() - (7 / 6 * self.height)
+
     if love.keyboard.isDown(moveUp) then
-        self:updateSpeed(dt)
-        self.y = math.max(self.height / 6, self.y - self.speed * dt)
+        if self.y > minY then
+            self:updateSpeed(dt)
+            self.body:setLinearVelocity(0, -self.speed)
+        else
+            self.body:setLinearVelocity(0, 0)
+        end
     elseif love.keyboard.isDown(moveDown) then
-        self:updateSpeed(dt)
-        self.y = math.min(SCREEN_HEIGHT - (7 / 6 * self.height), self.y + self.speed * dt)
+        if self.y < maxY then
+            self:updateSpeed(dt)
+            self.body:setLinearVelocity(0, self.speed)
+        else
+            self.body:setLinearVelocity(0, 0)
+        end
     end
+    self.x, self.y = self.body:getPosition()
 end
 
-function paddle:draw()
+function Paddle:draw()
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
 end
 
-return paddle
+return Paddle
