@@ -7,11 +7,45 @@ local world, player1, player2, ball, boundary1, boundary2
 function love.load()
     math.randomseed(os.time())
     world = love.physics.newWorld(0, 0)
+
+    local function beginContact(fixtureA, fixtureB)
+        local objectA = fixtureA:getUserData()
+        local objectB = fixtureB:getUserData()
+        if objectA and objectB and objectA.tag and objectB.tag then
+            if (objectA.tag == "ball" and objectB.tag == "paddle") or
+                (objectB.tag == "ball" and objectA.tag == "paddle") then
+                ball:collideWithPaddle()
+            elseif (objectA.tag == "ball" and objectB.tag == "boundary") or
+                (objectA.tag == "boundary" and objectB.tag == "ball") then
+                ball:collideWithBoundary()
+            end
+        end
+    end
+
+    local function endContact(fixtureA, fixtureB)
+        local objectA = fixtureA:getUserData()
+        local objectB = fixtureB:getUserData()
+        if objectA and objectB and objectA.tag and objectB.tag then
+            if (objectA.tag == "ball" and objectB.tag == "paddle") or
+                (objectB.tag == "ball" and objectA.tag == "paddle") then
+                ball:playCollisionWithPaddle()
+            elseif (objectA.tag == "ball" and objectB.tag == "boundary") or
+                (objectA.tag == "boundary" and objectB.tag == "ball") then
+                ball:playCollisionWithBoundary()
+            end
+        end
+    end
+
+    world:setCallbacks(beginContact, endContact)
+
     player1 = Paddle.new(world, Paddle.width, SCREEN_HEIGHT / 2 - Paddle.height / 2)
     player2 = Paddle.new(world, SCREEN_WIDTH - 2 * Paddle.width, SCREEN_HEIGHT / 2 - Paddle.height / 2)
+
     ball = Ball.new(world, SCREEN_WIDTH / 2 - Ball.width / 2, SCREEN_HEIGHT / 2 - Ball.height / 2)
+
     boundary1 = Boundary.new(world, Boundary.width / 2, Boundary.height * 0.75)
     boundary2 = Boundary.new(world, Boundary.width / 2, SCREEN_HEIGHT - Boundary.height)
+
     local xDirection = math.random(2) == 1 and 1 or -1
     local yDirection = math.random(2) == 1 and 1 or -1
     ball.body:setLinearVelocity(xDirection * math.random(200, 250), yDirection * math.random(15, 50))

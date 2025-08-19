@@ -3,16 +3,18 @@ local Paddle = {
     height = 100,
     acceleration = 1000,
     speed = 0,
-    maxSpeed = 300
+    maxSpeed = 400
 }
 
 function Paddle.new(world, x, y)
     local instance = {}
     instance.x = x
     instance.y = y
+    instance.tag = "paddle"
     instance.body = love.physics.newBody(world, x, y, "kinematic")
     instance.shape = love.physics.newRectangleShape(Paddle.width / 2, Paddle.height / 2, Paddle.width, Paddle.height)
     instance.fixture = love.physics.newFixture(instance.body, instance.shape)
+    instance.fixture:setUserData(instance)
     setmetatable(instance, { __index = Paddle })
     return instance
 end
