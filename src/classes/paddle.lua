@@ -3,7 +3,7 @@ local Paddle = {
     height = 100,
     acceleration = 1000,
     speed = 0,
-    maxSpeed = 400
+    maxSpeed = 700
 }
 
 function Paddle.new(world, x, y)

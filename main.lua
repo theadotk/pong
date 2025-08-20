@@ -2,7 +2,14 @@ local Paddle = require("src.classes.paddle")
 local Ball = require("src.classes.ball")
 local Boundary = require("src.classes.boundary")
 
+local font
+
+local centerPosition, scorePositionGap, scoreY
+
 local world, player1, player2, ball, boundary1, boundary2
+
+Score1 = 0
+Score2 = 0
 
 function love.load()
     math.randomseed(os.time())
@@ -46,9 +53,14 @@ function love.load()
     boundary1 = Boundary.new(world, Boundary.width / 2, Boundary.height * 0.75)
     boundary2 = Boundary.new(world, Boundary.width / 2, SCREEN_HEIGHT - Boundary.height)
 
-    local xDirection = math.random(2) == 1 and 1 or -1
-    local yDirection = math.random(2) == 1 and 1 or -1
-    ball.body:setLinearVelocity(xDirection * math.random(200, 250), yDirection * math.random(15, 50))
+    font = love.graphics.newFont(24)
+    love.graphics.setFont(font)
+
+    centerPosition = SCREEN_WIDTH / 2
+    scorePositionGap = 36
+    scoreY = 15
+
+    ball:reset()
 end
 
 function love.update(dt)
@@ -76,7 +88,9 @@ end
 
 function love.draw()
     love.graphics.clear(10 / 255, 10 / 255, 15 / 255, 255 / 255)
-    love.graphics.line(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT)
+    love.graphics.line(centerPosition + 0.5, 0, centerPosition + 0.5, SCREEN_HEIGHT)
+    love.graphics.print(tostring(Score1), centerPosition - scorePositionGap - font:getWidth(tostring(Score1)) / 2, scoreY)
+    love.graphics.print(tostring(Score2), centerPosition + scorePositionGap - font:getWidth(tostring(Score2)) / 2, scoreY)
     player1:draw()
     player2:draw()
     ball:draw()
